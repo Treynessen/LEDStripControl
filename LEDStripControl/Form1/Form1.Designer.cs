@@ -35,6 +35,7 @@
             this.DisconnectContextMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.ModesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.StaticToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PolishFlagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitContextMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.LEDControl = new System.Windows.Forms.NotifyIcon(this.components);
@@ -49,7 +50,7 @@
             this.PortsComboBox = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.SaveAndConnectPortButton = new System.Windows.Forms.Button();
-            this.PolishFlagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RefreshPortsButton = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -91,9 +92,16 @@
             // StaticToolStripMenuItem
             // 
             this.StaticToolStripMenuItem.Name = "StaticToolStripMenuItem";
-            this.StaticToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.StaticToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.StaticToolStripMenuItem.Text = "Статический";
             this.StaticToolStripMenuItem.Click += new System.EventHandler(this.StaticToolStripMenuItem_Click);
+            // 
+            // PolishFlagToolStripMenuItem
+            // 
+            this.PolishFlagToolStripMenuItem.Name = "PolishFlagToolStripMenuItem";
+            this.PolishFlagToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.PolishFlagToolStripMenuItem.Text = "Польский флаг";
+            this.PolishFlagToolStripMenuItem.Click += new System.EventHandler(this.PolishFlagToolStripMenuItem_Click);
             // 
             // SettingsToolStripMenuItem
             // 
@@ -128,7 +136,7 @@
             this.groupBox1.Font = new System.Drawing.Font("Consolas", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.groupBox1.Location = new System.Drawing.Point(12, 71);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(380, 200);
+            this.groupBox1.Size = new System.Drawing.Size(390, 200);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Цвет подсветки по умолчанию";
@@ -213,26 +221,31 @@
             // SaveAndConnectPortButton
             // 
             this.SaveAndConnectPortButton.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.SaveAndConnectPortButton.Location = new System.Drawing.Point(198, 24);
+            this.SaveAndConnectPortButton.Location = new System.Drawing.Point(293, 24);
             this.SaveAndConnectPortButton.Name = "SaveAndConnectPortButton";
             this.SaveAndConnectPortButton.Size = new System.Drawing.Size(109, 27);
             this.SaveAndConnectPortButton.TabIndex = 4;
-            this.SaveAndConnectPortButton.Text = "Сохранить";
+            this.SaveAndConnectPortButton.Text = "Подключить";
             this.SaveAndConnectPortButton.UseVisualStyleBackColor = true;
             this.SaveAndConnectPortButton.Click += new System.EventHandler(this.ConnectToPortButton_Click);
             // 
-            // PolishFlagToolStripMenuItem
+            // RefreshPortsButton
             // 
-            this.PolishFlagToolStripMenuItem.Name = "PolishFlagToolStripMenuItem";
-            this.PolishFlagToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.PolishFlagToolStripMenuItem.Text = "Польский флаг";
-            this.PolishFlagToolStripMenuItem.Click += new System.EventHandler(this.PolishFlagToolStripMenuItem_Click);
+            this.RefreshPortsButton.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.RefreshPortsButton.Location = new System.Drawing.Point(198, 24);
+            this.RefreshPortsButton.Name = "RefreshPortsButton";
+            this.RefreshPortsButton.Size = new System.Drawing.Size(89, 27);
+            this.RefreshPortsButton.TabIndex = 5;
+            this.RefreshPortsButton.Text = "Обновить";
+            this.RefreshPortsButton.UseVisualStyleBackColor = true;
+            this.RefreshPortsButton.Click += new System.EventHandler(this.RefreshPortsButton_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(404, 450);
+            this.ClientSize = new System.Drawing.Size(414, 450);
+            this.Controls.Add(this.RefreshPortsButton);
             this.Controls.Add(this.SaveAndConnectPortButton);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.PortsComboBox);
@@ -272,6 +285,7 @@
         private System.Windows.Forms.ToolStripMenuItem StaticToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem PolishFlagToolStripMenuItem;
         private System.Windows.Forms.Button SaveAndConnectPortButton;
+        private System.Windows.Forms.Button RefreshPortsButton;
     }
 }
 

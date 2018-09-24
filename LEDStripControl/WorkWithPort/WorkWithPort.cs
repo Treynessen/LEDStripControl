@@ -6,7 +6,8 @@ enum Modes
     Static,
     Dynamic,
     PolishFlag,
-    OFF
+    OFF,
+    Waiting = 255
 }
 
 public static class WorkWithPort
