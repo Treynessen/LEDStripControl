@@ -34,21 +34,22 @@
             this.ConnectContextMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.DisconnectContextMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.ModesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.StaticToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitContextMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.LEDControl = new System.Windows.Forms.NotifyIcon(this.components);
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.SaveRGB = new System.Windows.Forms.Button();
-            this.RedTextBox = new System.Windows.Forms.TextBox();
-            this.GreenTextBox = new System.Windows.Forms.TextBox();
             this.BlueTextBox = new System.Windows.Forms.TextBox();
+            this.GreenTextBox = new System.Windows.Forms.TextBox();
+            this.RedTextBox = new System.Windows.Forms.TextBox();
+            this.SaveRGB = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.PortsComboBox = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.StaticToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaveAndConnectPortButton = new System.Windows.Forms.Button();
+            this.PolishFlagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -62,42 +63,49 @@
             this.SettingsToolStripMenuItem,
             this.ExitContextMenu});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 136);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(145, 114);
             // 
             // ConnectContextMenu
             // 
             this.ConnectContextMenu.Name = "ConnectContextMenu";
-            this.ConnectContextMenu.Size = new System.Drawing.Size(180, 22);
+            this.ConnectContextMenu.Size = new System.Drawing.Size(144, 22);
             this.ConnectContextMenu.Text = "Подключить";
             this.ConnectContextMenu.Click += new System.EventHandler(this.ConnectContextMenu_Click);
             // 
             // DisconnectContextMenu
             // 
             this.DisconnectContextMenu.Name = "DisconnectContextMenu";
-            this.DisconnectContextMenu.Size = new System.Drawing.Size(180, 22);
+            this.DisconnectContextMenu.Size = new System.Drawing.Size(144, 22);
             this.DisconnectContextMenu.Text = "Отключить";
             this.DisconnectContextMenu.Click += new System.EventHandler(this.DisconnectContextMenu_Click);
             // 
             // ModesToolStripMenuItem
             // 
             this.ModesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.StaticToolStripMenuItem});
+            this.StaticToolStripMenuItem,
+            this.PolishFlagToolStripMenuItem});
             this.ModesToolStripMenuItem.Name = "ModesToolStripMenuItem";
-            this.ModesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ModesToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.ModesToolStripMenuItem.Text = "Режимы";
-            this.ModesToolStripMenuItem.Click += new System.EventHandler(this.ModesToolStripMenuItem_Click);
+            // 
+            // StaticToolStripMenuItem
+            // 
+            this.StaticToolStripMenuItem.Name = "StaticToolStripMenuItem";
+            this.StaticToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.StaticToolStripMenuItem.Text = "Статический";
+            this.StaticToolStripMenuItem.Click += new System.EventHandler(this.StaticToolStripMenuItem_Click);
             // 
             // SettingsToolStripMenuItem
             // 
             this.SettingsToolStripMenuItem.Name = "SettingsToolStripMenuItem";
-            this.SettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.SettingsToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.SettingsToolStripMenuItem.Text = "Настройки";
             this.SettingsToolStripMenuItem.Click += new System.EventHandler(this.SettingsToolStripMenuItem_Click);
             // 
             // ExitContextMenu
             // 
             this.ExitContextMenu.Name = "ExitContextMenu";
-            this.ExitContextMenu.Size = new System.Drawing.Size(180, 22);
+            this.ExitContextMenu.Size = new System.Drawing.Size(144, 22);
             this.ExitContextMenu.Text = "Выход";
             this.ExitContextMenu.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
@@ -105,7 +113,7 @@
             // 
             this.LEDControl.ContextMenuStrip = this.contextMenuStrip1;
             this.LEDControl.Icon = ((System.Drawing.Icon)(resources.GetObject("LEDControl.Icon")));
-            this.LEDControl.Text = "notifyIcon1";
+            this.LEDControl.Text = "LEDControl";
             this.LEDControl.Visible = true;
             // 
             // groupBox1
@@ -125,32 +133,26 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Цвет подсветки по умолчанию";
             // 
-            // label1
+            // BlueTextBox
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 39);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(94, 24);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Красный";
+            this.BlueTextBox.Location = new System.Drawing.Point(106, 112);
+            this.BlueTextBox.Name = "BlueTextBox";
+            this.BlueTextBox.Size = new System.Drawing.Size(46, 32);
+            this.BlueTextBox.TabIndex = 6;
             // 
-            // label2
+            // GreenTextBox
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 77);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(94, 24);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Зеленый";
+            this.GreenTextBox.Location = new System.Drawing.Point(106, 74);
+            this.GreenTextBox.Name = "GreenTextBox";
+            this.GreenTextBox.Size = new System.Drawing.Size(46, 32);
+            this.GreenTextBox.TabIndex = 5;
             // 
-            // label3
+            // RedTextBox
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 115);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(70, 24);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Синий";
+            this.RedTextBox.Location = new System.Drawing.Point(106, 36);
+            this.RedTextBox.Name = "RedTextBox";
+            this.RedTextBox.Size = new System.Drawing.Size(46, 32);
+            this.RedTextBox.TabIndex = 4;
             // 
             // SaveRGB
             // 
@@ -162,26 +164,32 @@
             this.SaveRGB.UseVisualStyleBackColor = true;
             this.SaveRGB.Click += new System.EventHandler(this.SaveRGB_Click);
             // 
-            // RedTextBox
+            // label3
             // 
-            this.RedTextBox.Location = new System.Drawing.Point(106, 36);
-            this.RedTextBox.Name = "RedTextBox";
-            this.RedTextBox.Size = new System.Drawing.Size(46, 32);
-            this.RedTextBox.TabIndex = 4;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 115);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(70, 24);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Синий";
             // 
-            // GreenTextBox
+            // label2
             // 
-            this.GreenTextBox.Location = new System.Drawing.Point(106, 74);
-            this.GreenTextBox.Name = "GreenTextBox";
-            this.GreenTextBox.Size = new System.Drawing.Size(46, 32);
-            this.GreenTextBox.TabIndex = 5;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 77);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(94, 24);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Зеленый";
             // 
-            // BlueTextBox
+            // label1
             // 
-            this.BlueTextBox.Location = new System.Drawing.Point(106, 112);
-            this.BlueTextBox.Name = "BlueTextBox";
-            this.BlueTextBox.Size = new System.Drawing.Size(46, 32);
-            this.BlueTextBox.TabIndex = 6;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 39);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(94, 24);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Красный";
             // 
             // PortsComboBox
             // 
@@ -202,29 +210,30 @@
             this.label4.TabIndex = 3;
             this.label4.Text = "Порт";
             // 
-            // button2
+            // SaveAndConnectPortButton
             // 
-            this.button2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button2.Location = new System.Drawing.Point(198, 24);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(109, 27);
-            this.button2.TabIndex = 4;
-            this.button2.Text = "Сохранить";
-            this.button2.UseVisualStyleBackColor = true;
+            this.SaveAndConnectPortButton.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.SaveAndConnectPortButton.Location = new System.Drawing.Point(198, 24);
+            this.SaveAndConnectPortButton.Name = "SaveAndConnectPortButton";
+            this.SaveAndConnectPortButton.Size = new System.Drawing.Size(109, 27);
+            this.SaveAndConnectPortButton.TabIndex = 4;
+            this.SaveAndConnectPortButton.Text = "Сохранить";
+            this.SaveAndConnectPortButton.UseVisualStyleBackColor = true;
+            this.SaveAndConnectPortButton.Click += new System.EventHandler(this.ConnectToPortButton_Click);
             // 
-            // StaticToolStripMenuItem
+            // PolishFlagToolStripMenuItem
             // 
-            this.StaticToolStripMenuItem.Name = "StaticToolStripMenuItem";
-            this.StaticToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.StaticToolStripMenuItem.Text = "Статический";
-            this.StaticToolStripMenuItem.Click += new System.EventHandler(this.StaticToolStripMenuItem_Click);
+            this.PolishFlagToolStripMenuItem.Name = "PolishFlagToolStripMenuItem";
+            this.PolishFlagToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.PolishFlagToolStripMenuItem.Text = "Польский флаг";
+            this.PolishFlagToolStripMenuItem.Click += new System.EventHandler(this.PolishFlagToolStripMenuItem_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(404, 450);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.SaveAndConnectPortButton);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.PortsComboBox);
             this.Controls.Add(this.groupBox1);
@@ -260,8 +269,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox PortsComboBox;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ToolStripMenuItem StaticToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem PolishFlagToolStripMenuItem;
+        private System.Windows.Forms.Button SaveAndConnectPortButton;
     }
 }
 
