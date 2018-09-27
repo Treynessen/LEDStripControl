@@ -4,7 +4,7 @@ using System.IO.Ports;
 enum Modes
 {
     Static,
-    Dynamic,
+    Ambilight,
     PolishFlag,
     OFF,
     Waiting = 255
