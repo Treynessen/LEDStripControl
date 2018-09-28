@@ -3,12 +3,12 @@ using System.IO.Ports;
 
 enum Modes
 {
-    Static,
+    StaticColor,
+    Animation,
     Ambilight,
     PolishFlag,
-    OFF,
-    Waiting = 255
-}
+    NotConnected
+};
 
 public static class WorkWithPort
 {
@@ -41,14 +41,18 @@ public static class WorkWithPort
             port = new SerialPort(port_name, 9600);
             port.Open();
             port.ReadTimeout = 5000;
+            for (int i = 0; i < 100; ++i)
+            {
+                if (port.ReadLine() == "LED Strip") return port;
+            }
             str = port.ReadLine();
         }
         catch
         {
+            if (port != null && port.IsOpen) port.Close();
             port = null;
             throw;
         }
-        if (str == "LED Strip") return port;
-        else return null;
+        return null;
     }
 }

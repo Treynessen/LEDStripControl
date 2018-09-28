@@ -35,6 +35,7 @@
             this.DisconnectContextMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.ModesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.StaticToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AmbilightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PolishFlagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitContextMenu = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,7 +63,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.AmbilightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AnimationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -98,6 +99,7 @@
             // 
             this.ModesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StaticToolStripMenuItem,
+            this.AnimationToolStripMenuItem,
             this.AmbilightToolStripMenuItem,
             this.PolishFlagToolStripMenuItem});
             this.ModesToolStripMenuItem.Name = "ModesToolStripMenuItem";
@@ -110,6 +112,13 @@
             this.StaticToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.StaticToolStripMenuItem.Text = "Статический";
             this.StaticToolStripMenuItem.Click += new System.EventHandler(this.StaticToolStripMenuItem_Click);
+            // 
+            // AmbilightToolStripMenuItem
+            // 
+            this.AmbilightToolStripMenuItem.Name = "AmbilightToolStripMenuItem";
+            this.AmbilightToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.AmbilightToolStripMenuItem.Text = "Ambilight";
+            this.AmbilightToolStripMenuItem.Click += new System.EventHandler(this.AmbilightToolStripMenuItem_Click);
             // 
             // PolishFlagToolStripMenuItem
             // 
@@ -369,12 +378,12 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
-            // AmbilightToolStripMenuItem
+            // AnimationToolStripMenuItem
             // 
-            this.AmbilightToolStripMenuItem.Name = "AmbilightToolStripMenuItem";
-            this.AmbilightToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.AmbilightToolStripMenuItem.Text = "Ambilight";
-            this.AmbilightToolStripMenuItem.Click += new System.EventHandler(this.AmbilightToolStripMenuItem_Click);
+            this.AnimationToolStripMenuItem.Name = "AnimationToolStripMenuItem";
+            this.AnimationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.AnimationToolStripMenuItem.Text = "Анимация";
+            this.AnimationToolStripMenuItem.Click += new System.EventHandler(this.AnimationToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -442,6 +451,7 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.CheckBox CorneLEDsCheckBox;
         private System.Windows.Forms.ToolStripMenuItem AmbilightToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem AnimationToolStripMenuItem;
     }
 }
 

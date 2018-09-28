@@ -1,88 +1,109 @@
 #include <FastLED.h>
 
+#define VERTICAL_LEDS_NUM 8 // количество светодиодов на 1 вертикальной полосе
+#define HORIZONTAL_LEDS_NUM 15 // количество светодиодов на 1 горизонтальной полосе
+#define NUM_LEDS (2 * VERTICAL_LEDS_NUM + 2 * HORIZONTAL_LEDS_NUM) // общее количество светодиодов
+#define LED_CONTROL_PIN 6 // управляющий пин (с которого подается сигнал на ленту)
+#define RELAY_POWER 2 // пин, питающий реле
+#define RELAY_SIGNAL 3 // пин, управляющий реле
+
 enum Modes{
-  Static,
+  StaticColor,
+  Animation,
   Ambilight,
   PolishFlag,
-  OFF,
-  NotInstalled = 113
+  NotConnected
 };
 
-byte mode = Modes::NotInstalled;
-byte r = 0, g = 0, b = 0;
-unsigned long passed_time = 0;
-bool connected_to_pc = false;
-bool LED_OFF = true;
-const byte LED_LENGTH = 46;
-CRGB leds[LED_LENGTH];
+byte static_color[3] = {0, 0, 0}; // цвет для StaticColor режима
+byte mode = Modes::NotConnected;
+unsigned long time_als = 0; // time after last signal
+
+// анимация
+CRGBPalette16 currentPalette = RainbowColors_p;
+TBlendType currentBlending = LINEARBLEND;
+byte startIndex = 0;
+
+CRGB leds[NUM_LEDS]; // лента
 
 void setup() {
-  FastLED.addLeds<NEOPIXEL, 6>(leds, LED_LENGTH); // 6 - пин, подающий сигнал; 46 - количество светодиодов
   Serial.begin(9600);
-  connected_to_pc = false;
-  byte mode = Modes::NotInstalled;
-  pinMode(2, OUTPUT); // питание реле
-  pinMode(3, OUTPUT); // приемник сигнала реле
-  digitalWrite(2, HIGH);
-  digitalWrite(3, LOW); // по умолчанию реле закрыто
+  FastLED.addLeds<NEOPIXEL, LED_CONTROL_PIN>(leds, (2 * VERTICAL_LEDS_NUM + 2 * HORIZONTAL_LEDS_NUM));
+  pinMode(RELAY_POWER, OUTPUT);
+  digitalWrite(RELAY_POWER, HIGH);
+  pinMode(RELAY_SIGNAL, OUTPUT);
+  RelayOn(false);
 }
 
 void loop() {
-  if(!connected_to_pc){
-    Serial.write("LED Strip\n");
+  if(mode == Modes::NotConnected) Serial.write("LED Strip\n");
+  
+  if(Serial.available() > 0){
+    if((mode == Modes::NotConnected) || (millis() - time_als > 1000)){
+      mode = Serial.read();
+      if(mode != Modes::NotConnected) RelayOn(true);
+      time_als = millis();
+    }
+    if(mode == Modes::StaticColor){
+      delay(20); // т.к. ардуино не успевает получить все данные
+      static_color[0] = Serial.read();
+      static_color[1] = Serial.read();
+      static_color[2] = Serial.read();
+    }
+    else if(mode == Modes::NotConnected) RelayOn(false);
   }
-  else if(mode == Modes::Static){
-    for(int i = 0; i < LED_LENGTH; ++i) leds[i].setRGB(r, g, b);
-    FastLED.show();
+  
+  switch(mode){
+    case Modes::StaticColor:
+      StaticColorMode();
+      break;
+    case Modes::Animation:
+      AnimationMode();
+      break;
+    case Modes::Ambilight:
+      break;
+    case Modes::PolishFlag:
+      PolishFlagMode();
+      break;
   }
-  else if(mode == Modes::PolishFlag){
-    for(int i = 4 ; i <= 26 ; ++i) leds[i].setRGB(255, 255, 255);
-    for(int i = 27 ; i <= 45 ; ++i) leds[i].setRGB(255, 0, 0);
-    for(int i = 0 ; i <= 3 ; ++i) leds[i].setRGB(255, 0, 0);
-    FastLED.show();
-  }
-  delay(100);
 }
 
-byte count = 0; // Необходим для записи rgb. Если == 3, то обнуляем
-int leds_count = 0; // Необходим для записи данных, для эмбилайт режима. Если >= LED_LENGTH, то обнуляем
+void RelayOn(bool on){
+  if(on) digitalWrite(RELAY_SIGNAL, HIGH);
+  else digitalWrite(RELAY_SIGNAL, LOW);
+}
 
-void serialEvent() {
-  while(Serial.available()){ 
-    if(millis() - passed_time > 1000) {
-      mode = Modes::NotInstalled;
-      count = 0;
-      leds_count = 0;
-    }
-    if(mode == Modes::NotInstalled) mode = Serial.read();
-    if(mode == Modes::OFF){
-      connected_to_pc = false;
-      digitalWrite(3, LOW);
-      LED_OFF = true;
-    }
-    else if (mode == Modes::Static){
-      if(count == 0) r = Serial.read();
-      else if(count == 1) g = Serial.read();
-      else if(count == 2) b = Serial.read();
-      if(++count >= 3) count = 0;
-    }
-    else if(mode == Modes::Ambilight){
-      if(leds_count >= LED_LENGTH) leds_count = 0;
-      if(Serial.available() > 3){
-        leds[leds_count].r = Serial.read();
-        leds[leds_count].g = Serial.read();
-        leds[leds_count++].b = Serial.read();
-      }
-      FastLED.show();
-    }
-    if((mode == Modes::Static || mode == Modes::Ambilight || mode == Modes::PolishFlag) && (LED_OFF || !connected_to_pc)){
-      if(!connected_to_pc) connected_to_pc = true;
-      if(LED_OFF){
-        digitalWrite(3, HIGH);
-        LED_OFF = false;
-      }
-    }
-    
-    passed_time = millis();
+void StaticColorMode(){
+  for(int i = 0; i < NUM_LEDS; ++i){
+    leds[i].setRGB(static_color[0], static_color[1], static_color[2]);
   }
+  FastLED.show();
+}
+
+void PolishFlagMode(){
+  for(int i=0; i < VERTICAL_LEDS_NUM / 2; ++i){
+    leds[i].setRGB(255, 0, 0);
+    leds[2 * VERTICAL_LEDS_NUM + HORIZONTAL_LEDS_NUM -1 - i].setRGB(255, 0, 0);
+  }
+  for(int i = VERTICAL_LEDS_NUM / 2; i < VERTICAL_LEDS_NUM; ++i){
+    leds[i].setRGB(255, 255, 255);
+    leds[2 * VERTICAL_LEDS_NUM + HORIZONTAL_LEDS_NUM -1 - i].setRGB(255, 255, 255);
+  }
+  for(int i = VERTICAL_LEDS_NUM; i < VERTICAL_LEDS_NUM + HORIZONTAL_LEDS_NUM; ++i){
+    leds[i].setRGB(255, 255, 255);
+    leds[VERTICAL_LEDS_NUM + HORIZONTAL_LEDS_NUM + i].setRGB(255, 0, 0);
+  }
+  FastLED.show();
+}
+
+void AnimationMode(){
+  ++startIndex;
+
+  byte colorIndex = startIndex;
+  for (int i = 0; i < NUM_LEDS; ++i) {
+    leds[i] = ColorFromPalette(currentPalette, colorIndex, 255, currentBlending); // 255 - яркость
+    colorIndex += 1;
+  }
+
+  FastLED.delay(1000 / 60);
 }
