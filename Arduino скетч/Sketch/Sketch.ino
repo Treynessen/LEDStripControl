@@ -16,7 +16,9 @@ enum Modes{
 };
 
 byte static_color[3] = {0, 0, 0}; // цвет для StaticColor режима
+
 byte mode = Modes::NotConnected;
+
 unsigned long time_als = 0; // time after last signal
 
 // анимация
@@ -27,7 +29,7 @@ byte startIndex = 0;
 CRGB leds[NUM_LEDS]; // лента
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(1000000);
   FastLED.addLeds<NEOPIXEL, LED_CONTROL_PIN>(leds, (2 * VERTICAL_LEDS_NUM + 2 * HORIZONTAL_LEDS_NUM));
   pinMode(RELAY_POWER, OUTPUT);
   digitalWrite(RELAY_POWER, HIGH);
@@ -38,34 +40,7 @@ void setup() {
 void loop() {
   if(mode == Modes::NotConnected) Serial.write("LED Strip\n");
   
-  if(Serial.available() > 0){
-    if((mode == Modes::NotConnected) || (millis() - time_als > 1000)){
-      mode = Serial.read();
-      if(mode != Modes::NotConnected) RelayOn(true);
-      time_als = millis();
-    }
-    if(mode == Modes::StaticColor){
-      delay(20); // т.к. ардуино не успевает получить все данные
-      static_color[0] = Serial.read();
-      static_color[1] = Serial.read();
-      static_color[2] = Serial.read();
-    }
-    else if(mode == Modes::NotConnected) RelayOn(false);
-  }
   
-  switch(mode){
-    case Modes::StaticColor:
-      StaticColorMode();
-      break;
-    case Modes::Animation:
-      AnimationMode();
-      break;
-    case Modes::Ambilight:
-      break;
-    case Modes::PolishFlag:
-      PolishFlagMode();
-      break;
-  }
 }
 
 void RelayOn(bool on){
