@@ -41,7 +41,7 @@ namespace LEDStripControl
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (arduino.Connected) arduino.Disconnect();
+            if (arduino.Connected) arduino.SetMode(Modes.NotConnected);
             if (arduino != null) arduino.Dispose();
         }
 
@@ -67,7 +67,7 @@ namespace LEDStripControl
 
         private void DisconnectContextMenu_Click(object sender, EventArgs e)
         {
-            arduino.Disconnect();
+            arduino.SetMode(Modes.NotConnected);
             DisableModes();
             ConnectContextMenu.Enabled = true;
             DisconnectContextMenu.Enabled = false;
@@ -80,7 +80,7 @@ namespace LEDStripControl
 
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            arduino.Disconnect();
+            arduino.SetMode(Modes.NotConnected);
             shut_down = true;
             Application.Exit();
         }

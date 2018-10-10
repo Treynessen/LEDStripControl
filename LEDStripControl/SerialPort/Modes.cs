@@ -1,5 +1,6 @@
 ﻿public enum Modes
 {
+    Connected,
     StaticColor,
     Animation,
     Ambilight,

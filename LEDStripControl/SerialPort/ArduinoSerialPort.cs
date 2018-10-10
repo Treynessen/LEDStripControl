@@ -12,6 +12,8 @@ public sealed partial class ArduinoSerialPort : IDisposable
     public bool Connected { get; private set; } = false;
 
     private DataToSend data;
+    Thread RefreshDataThread, SendDataToArduinoThread;
+    int arduino_buffer_size = 40; // Добавить в настройки?
     private bool stop_data_send = true;
     private bool have_corner_leds = false;
 
@@ -57,6 +59,11 @@ public sealed partial class ArduinoSerialPort : IDisposable
                 if (port.ReadLine() == "LED Strip")
                 {
                     PortName = port.PortName;
+                    current_mode = Modes.Connected;
+                    byte[] buffer = new byte[1];
+                    buffer[0] = (byte)Modes.Connected;
+                    port.Write(buffer, 0, buffer.Length);
+                    time_lcm = DateTime.Now;
                     return true;
                 }
             }
@@ -68,24 +75,6 @@ public sealed partial class ArduinoSerialPort : IDisposable
             throw;
         }
         return false;
-    }
-
-    public void Disconnect()
-    {
-        if (port != null && port.IsOpen)
-        {
-            if (!stop_data_send) stop_data_send = false;
-            TimeSpan one_second = new TimeSpan(0, 0, 1);
-            TimeSpan time = DateTime.Now - time_lcm;
-            if (one_second > time) Thread.Sleep(one_second - time); // т.к. прошивка настроена на 1000 мс
-                                                                    // задержку между изменениями режимов
-            byte[] buffer = new byte[1];
-            buffer[0] = (byte)Modes.NotConnected;
-            port.Write(buffer, 0, buffer.Length);
-            port.Close();
-            current_mode = Modes.NotConnected;
-        }
-        Connected = false;
     }
 
     public void RefreshPortsList()
@@ -110,25 +99,50 @@ public sealed partial class ArduinoSerialPort : IDisposable
 
     public void SetMode(Modes mode)
     {
-        if (mode == Modes.NotConnected) Disconnect();
-        else if (port != null && port.IsOpen)
+        if (current_mode != Modes.NotConnected && port != null && port.IsOpen)
         {
-            TimeSpan one_second = new TimeSpan(0, 0, 1);
-            TimeSpan time = DateTime.Now - time_lcm;
-            if (one_second > time) Thread.Sleep(one_second - time); // т.к. прошивка настроена на 1000 мс
-                                                                    // задержку между изменениями режимов
-            if (mode == Modes.Ambilight)
+            if (!stop_data_send)
+            {
+                stop_data_send = true;
+                RefreshDataThread.Join();
+                SendDataToArduinoThread.Join();
+                TimeSpan two_seconds = new TimeSpan(0, 0, 0, 2);
+                TimeSpan time = DateTime.Now - time_lcm;
+                if (two_seconds > time) Thread.Sleep(two_seconds - time); // т.к. ардуино ждет 1700 мс. Если в течении
+                                                                          // ожидания данные не были отправлены, то 
+                                                                          // происходит отключение эмбилайта
+            }
+            else
+            {
+                TimeSpan one_second = new TimeSpan(0, 0, 0, 1);
+                TimeSpan time = DateTime.Now - time_lcm;
+                if (one_second > time) Thread.Sleep(one_second - time); // т.к. прошивка настроена на 800 мс
+                                                                        // задержку между изменениями режимов
+            }
+
+            if (mode == Modes.NotConnected)
+            {
+                byte[] buffer = new byte[1];
+                buffer[0] = (byte)Modes.NotConnected;
+                port.Write(buffer, 0, buffer.Length);
+                port.Close();
+                current_mode = Modes.NotConnected;
+                Connected = false;
+            }
+            else if (mode == Modes.Ambilight)
             {
                 if (data != null)
                 {
-                    Thread th1 = new Thread(() =>
+                    // Обновление данных
+                    RefreshDataThread = new Thread(() =>
                     {
                         while (!stop_data_send)
                         {
                             data.RefreshData();
                         }
                     });
-                    Thread th2 = new Thread(() =>
+
+                    SendDataToArduinoThread = new Thread(() =>
                     {
                         byte[] send_mode = new byte[1];
                         send_mode[0] = (byte)(Modes.Ambilight);
@@ -136,12 +150,17 @@ public sealed partial class ArduinoSerialPort : IDisposable
                         TimeSpan sixteen_ms = new TimeSpan(0, 0, 0, 0, 16);
                         TimeSpan time_for_sleep = new TimeSpan();
                         DateTime dt = new DateTime();
+
+                        int it_num = Rounding(buffer.Length / (float)arduino_buffer_size); // количество отправок данных
+
                         port.Write(send_mode, 0, send_mode.Length);
                         while (!stop_data_send)
                         {
                             dt = DateTime.Now;
+
                             lock (data.Lock)
                             {
+                                // Запись данных, для отправки на ардуину, в буфер
                                 for (int i = 0, it = 0; i < 2 * (data.NumHorizontalLeds + data.NumVerticalLeds) + (have_corner_leds ? 4 : 0); ++i)
                                 {
                                     if (have_corner_leds)
@@ -203,16 +222,39 @@ public sealed partial class ArduinoSerialPort : IDisposable
                                     }
                                 }
                             }
-                            port.Write(buffer, 0, buffer.Length);
+
+                            // Отправка данных на ардуину
+                            for (int i = 0; i < it_num; ++i)
+                            {
+                                try
+                                {
+                                    // без привязки ко времени, т.к. установлен port.ReadTimeout = 5000
+                                    // ожидаем до тех пор, пока Arduino не пришлет ОК. Это означает, что
+                                    // микроконтроллер готов принять новую порцию данных
+                                    while (port.ReadLine() != "OK") ;
+                                }
+                                catch (TimeoutException)
+                                {
+                                    stop_data_send = false;
+                                    MessageBox.Show("Arduino не отвечает", "Ошибка");
+                                    break;
+                                }
+                                if (i != it_num - 1) port.Write(buffer, i * arduino_buffer_size, arduino_buffer_size);
+                                else port.Write(buffer, i * arduino_buffer_size, buffer.Length - i * arduino_buffer_size);
+                                Thread.Sleep(16 / it_num - 1);
+                                time_lcm = DateTime.Now;
+                            }
+
+                            // Данные отправляются раз в 16 мс, что соответствует 60 кадрам/сек
                             time_for_sleep = DateTime.Now - dt;
                             if (sixteen_ms > time_for_sleep) Thread.Sleep(sixteen_ms - time_for_sleep);
                         }
                     });
-                    th1.Name = "RefreshData";
-                    th2.Name = "SendDataToArduino";
+                    RefreshDataThread.Name = "RefreshData";
+                    SendDataToArduinoThread.Name = "SendDataToArduino";
                     stop_data_send = false;
-                    th1.Start();
-                    th2.Start();
+                    RefreshDataThread.Start();
+                    SendDataToArduinoThread.Start();
                 }
                 else throw new ArgumentNullException("Ambilight error");
             }
@@ -240,12 +282,19 @@ public sealed partial class ArduinoSerialPort : IDisposable
                 port.Write(buffer, 0, buffer.Length);
                 current_mode = Modes.StaticColor;
             }
-            time_lcm = DateTime.Now;
+
+            if (mode != Modes.Ambilight) time_lcm = DateTime.Now;
         }
     }
 
     public void Dispose()
     {
         if (data != null) data.Dispose();
+    }
+
+    private static int Rounding(float val)
+    {
+        int t_val = (int)val;
+        return t_val == val ? t_val : t_val + 1;
     }
 }
