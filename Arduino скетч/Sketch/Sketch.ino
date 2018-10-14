@@ -132,7 +132,7 @@ void loop() {
 			StaticColorMode();
 		}
 		else if (mode == Modes::PolishFlag) PolishFlagMode();
-		else if (mode == Modes::NotConnected) RelayOn(false);
+		else if (mode == Modes::NotConnected) SmoothShutdown();
 	}
 
 	if (mode == Modes::Animation) AnimationMode();
@@ -176,6 +176,16 @@ void AnimationMode() {
 	}
 
 	FastLED.delay(1000 / 60);
+}
+
+void SmoothShutdown() {
+	byte current_brightness = FastLED.getBrightness();
+	for (byte brightness = current_brightness; brightness > 0; --brightness) {
+		FastLED.setBrightness(brightness);
+		FastLED.delay(1500 / current_brightness);
+	}
+	RelayOn(false);
+	FastLED.setBrightness(current_brightness);
 }
 
 byte Rounding(float val) {

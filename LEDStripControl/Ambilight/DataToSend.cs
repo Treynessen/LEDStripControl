@@ -118,21 +118,21 @@ public sealed class DataToSend : IDisposable
             for (int i = 0; i < Data.Length; ++i)
             {
                 SetAverageColor(Data[i].Rectangle, stepy, stepx, bitmapData, out int R, out int G, out int B, out int count);
-                if (R == 0 && G == 0 && B == 0) R = G = B = 5;
+                if (R < 2 && G < 2 && B < 2) R = G = B = 5;
                 Data[i].SetRGB((byte)(R / count), (byte)(G / count), (byte)(B / count));
             }
             int r, g, b, _count;
             SetAverageColor(CornerData[0].Rectangle, stepy, stepx, bitmapData, out r, out g, out b, out _count);
-            if (r == 0 && g == 0 && b == 0) r = g = b = 5;
+            if (r < 2 && g < 2 && b < 2) r = g = b = 5;
             CornerData[0].SetRGB((byte)(r / _count), (byte)(g / _count), (byte)(b / _count));
             SetAverageColor(CornerData[1].Rectangle, stepy, stepx, bitmapData, out r, out g, out b, out _count);
-            if (r == 0 && g == 0 && b == 0) r = g = b = 5;
+            if (r < 2 && g < 2 && b < 2) r = g = b = 5;
             CornerData[1].SetRGB((byte)(r / _count), (byte)(g / _count), (byte)(b / _count));
             SetAverageColor(CornerData[2].Rectangle, stepy, stepx, bitmapData, out r, out g, out b, out _count);
-            if (r == 0 && g == 0 && b == 0) r = g = b = 5;
+            if (r < 2 && g < 2 && b < 2) r = g = b = 5;
             CornerData[2].SetRGB((byte)(r / _count), (byte)(g / _count), (byte)(b / _count));
             SetAverageColor(CornerData[3].Rectangle, stepy, stepx, bitmapData, out r, out g, out b, out _count);
-            if (r == 0 && g == 0 && b == 0) r = g = b = 5;
+            if (r < 2 && g < 2 && b < 2) r = g = b = 5;
             CornerData[3].SetRGB((byte)(r / _count), (byte)(g / _count), (byte)(b / _count));
         }
         image.UnlockBits(bitmapData);

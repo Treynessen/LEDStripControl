@@ -128,6 +128,7 @@ public sealed partial class ArduinoSerialPort : IDisposable
                 port.Close();
                 current_mode = Modes.NotConnected;
                 Connected = false;
+                Thread.Sleep(1500);
             }
             else if (mode == Modes.Ambilight)
             {
@@ -255,7 +256,8 @@ public sealed partial class ArduinoSerialPort : IDisposable
                                 }
                                 if (i != it_num - 1) port.Write(buffer, i * arduino_buffer_size, arduino_buffer_size);
                                 else port.Write(buffer, i * arduino_buffer_size, buffer.Length - i * arduino_buffer_size);
-                                Thread.Sleep(16 / it_num - 1);
+                                if (16 / it_num - 1 > 0) Thread.Sleep(16 / it_num - 1);
+                                else Thread.Sleep(1);
                                 time_lcm = DateTime.Now;
                             }
 
