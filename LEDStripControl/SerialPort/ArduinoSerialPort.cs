@@ -169,7 +169,8 @@ public sealed partial class ArduinoSerialPort : IDisposable
                                 // Запись данных, для отправки на ардуину, в буфер
                                 for (int i = 0, it = 0; i < 2 * (data.NumHorizontalLeds + data.NumVerticalLeds) + (have_corner_leds ? 4 : 0); ++i)
                                 {
-                                    if (have_corner_leds)
+                                    if (have_corner_leds && (i == data.NumVerticalLeds || i == (data.NumVerticalLeds + data.NumHorizontalLeds)
+                                    || i == (2 * data.NumVerticalLeds + data.NumHorizontalLeds) || i == (2 * data.NumVerticalLeds + 2 * data.NumHorizontalLeds)))
                                     {
                                         if (i == data.NumVerticalLeds)
                                         {
@@ -196,30 +197,37 @@ public sealed partial class ArduinoSerialPort : IDisposable
                                             buffer[it++] = data.CornerData[i].B;
                                         }
                                     }
-                                    else if (i == data.NumVerticalLeds - 1 || i == data.NumVerticalLeds)
+
+                                    else if (!have_corner_leds && (i == data.NumVerticalLeds - 1 || i == data.NumVerticalLeds || i == data.NumVerticalLeds + data.NumHorizontalLeds - 1
+                                    || i == data.NumVerticalLeds + data.NumHorizontalLeds || i == 2 * data.NumVerticalLeds + data.NumHorizontalLeds - 1 || i == 2 * data.NumVerticalLeds + data.NumHorizontalLeds
+                                    || i == 2 * data.NumVerticalLeds + 2 * data.NumHorizontalLeds - 1 || i == 2 * data.NumVerticalLeds + 2 * data.NumHorizontalLeds))
                                     {
-                                        buffer[it++] = (byte)((data.Data[i].R + data.CornerData[0].R) / 2);
-                                        buffer[it++] = (byte)((data.Data[i].G + data.CornerData[0].G) / 2);
-                                        buffer[it++] = (byte)((data.Data[i].B + data.CornerData[0].B) / 2);
+                                        if (i == data.NumVerticalLeds - 1 || i == data.NumVerticalLeds)
+                                        {
+                                            buffer[it++] = (byte)((data.Data[i].R + data.CornerData[0].R) / 2);
+                                            buffer[it++] = (byte)((data.Data[i].G + data.CornerData[0].G) / 2);
+                                            buffer[it++] = (byte)((data.Data[i].B + data.CornerData[0].B) / 2);
+                                        }
+                                        else if (i == data.NumVerticalLeds + data.NumHorizontalLeds - 1 || i == data.NumVerticalLeds + data.NumHorizontalLeds)
+                                        {
+                                            buffer[it++] = (byte)((data.Data[i].R + data.CornerData[1].R) / 2);
+                                            buffer[it++] = (byte)((data.Data[i].G + data.CornerData[1].G) / 2);
+                                            buffer[it++] = (byte)((data.Data[i].B + data.CornerData[1].B) / 2);
+                                        }
+                                        else if (i == 2 * data.NumVerticalLeds + data.NumHorizontalLeds - 1 || i == 2 * data.NumVerticalLeds + data.NumHorizontalLeds)
+                                        {
+                                            buffer[it++] = (byte)((data.Data[i].R + data.CornerData[2].R) / 2);
+                                            buffer[it++] = (byte)((data.Data[i].G + data.CornerData[2].G) / 2);
+                                            buffer[it++] = (byte)((data.Data[i].B + data.CornerData[2].B) / 2);
+                                        }
+                                        else if (i == 2 * data.NumVerticalLeds + 2 * data.NumHorizontalLeds - 1 || i == 2 * data.NumVerticalLeds + 2 * data.NumHorizontalLeds)
+                                        {
+                                            buffer[it++] = (byte)((data.Data[i].R + data.CornerData[3].R) / 2);
+                                            buffer[it++] = (byte)((data.Data[i].G + data.CornerData[3].G) / 2);
+                                            buffer[it++] = (byte)((data.Data[i].B + data.CornerData[3].B) / 2);
+                                        }
                                     }
-                                    else if (i == data.NumVerticalLeds + data.NumHorizontalLeds - 1 || i == data.NumVerticalLeds + data.NumHorizontalLeds)
-                                    {
-                                        buffer[it++] = (byte)((data.Data[i].R + data.CornerData[1].R) / 2);
-                                        buffer[it++] = (byte)((data.Data[i].G + data.CornerData[1].G) / 2);
-                                        buffer[it++] = (byte)((data.Data[i].B + data.CornerData[1].B) / 2);
-                                    }
-                                    else if (i == 2 * data.NumVerticalLeds + data.NumHorizontalLeds - 1 || i == 2 * data.NumVerticalLeds + data.NumHorizontalLeds)
-                                    {
-                                        buffer[it++] = (byte)((data.Data[i].R + data.CornerData[2].R) / 2);
-                                        buffer[it++] = (byte)((data.Data[i].G + data.CornerData[2].G) / 2);
-                                        buffer[it++] = (byte)((data.Data[i].B + data.CornerData[2].B) / 2);
-                                    }
-                                    else if (i == 2 * data.NumVerticalLeds + 2 * data.NumHorizontalLeds - 1 || i == 2 * data.NumVerticalLeds + 2 * data.NumHorizontalLeds)
-                                    {
-                                        buffer[it++] = (byte)((data.Data[i].R + data.CornerData[3].R) / 2);
-                                        buffer[it++] = (byte)((data.Data[i].G + data.CornerData[3].G) / 2);
-                                        buffer[it++] = (byte)((data.Data[i].B + data.CornerData[3].B) / 2);
-                                    }
+
                                     else
                                     {
                                         buffer[it++] = data.Data[i].R;
