@@ -31,7 +31,7 @@ CRGB leds[NUM_LEDS]; // лента
 byte static_color[3]; // цвет для StaticColor режима
 
 void setup() {
-	Serial.begin(1000000);
+	Serial.begin(150000);
 	FastLED.addLeds<NEOPIXEL, LED_CONTROL_PIN>(leds, (2 * VERTICAL_LEDS_NUM + 2 * HORIZONTAL_LEDS_NUM));
 	pinMode(RELAY_POWER, OUTPUT);
 	digitalWrite(RELAY_POWER, HIGH);
