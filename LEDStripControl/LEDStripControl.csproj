@@ -60,6 +60,8 @@
     <Compile Include="Ambilight\ScreenCapture.cs" />
     <Compile Include="Ambilight\RawRectangleExtensions.cs" />
     <Compile Include="Ambilight\DataToSend.cs" />
+    <Compile Include="ImportExportSettings\DataForSettingsExport.cs" />
+    <Compile Include="ImportExportSettings\ImportExportSettings.cs" />
     <Compile Include="ScreenSize.cs" />
     <Compile Include="Form1\Form1.cs">
       <SubType>Form</SubType>

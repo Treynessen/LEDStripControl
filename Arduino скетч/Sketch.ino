@@ -49,88 +49,8 @@ void loop() {
 			time_als = millis();
 		}
 
-		if (mode == Modes::Ambilight) {
-			byte it_num = Rounding(3 * NUM_LEDS / (float)ARDUINO_BUFFER_SIZE); // количество частей с данными
-			byte rgb = 0, led_num = 0;
-
-			bool done = true;
-			bool stop = false;
-
-			while (!stop) {
-				for (byte i = 0; i < it_num; ++i) {
-					if (done) {
-						time_als = millis();
-						// отправляем ОК на ПК до тех пор пока не выйдет время или с ПК не будут отправлены данные
-						while (Serial.available() == 0 && millis() - time_als < 1700) Serial.write("OK\n");
-						if (Serial.available() == 0) {
-							stop = true;
-							break;
-						}
-						time_als = millis();
-						if (i != it_num - 1) {
-							for (int j = i * ARDUINO_BUFFER_SIZE; j < (i + 1) * ARDUINO_BUFFER_SIZE; ++j) {
-								while (Serial.available() == 0 && millis() - time_als < 50);
-								if (Serial.available() == 0) {
-									stop = true;
-									done = false;
-									break;
-								}
-
-								if (rgb == 0) leds[led_num].r = Serial.read();
-								else if (rgb == 1) leds[led_num].g = Serial.read();
-								else if (rgb == 2) leds[led_num++].b = Serial.read();
-								++rgb;
-								if (rgb >= 3) rgb = 0;
-
-								time_als = millis();
-							}
-						}
-						else {
-							for (int j = i * ARDUINO_BUFFER_SIZE; j < 3 * NUM_LEDS; ++j) {
-								while (Serial.available() == 0 && millis() - time_als < 50);
-								if (Serial.available() == 0) {
-									stop = true;
-									done = false;
-									break;
-								}
-
-								if (rgb == 0) leds[led_num].r = Serial.read();
-								else if (rgb == 1) leds[led_num].g = Serial.read();
-								else if (rgb == 2) leds[led_num++].b = Serial.read();
-								++rgb;
-								if (rgb >= 3) rgb = 0;
-
-								time_als = millis();
-							}
-						}
-					}
-					else break;
-				}
-				FastLED.show();
-				rgb = 0;
-				led_num = 0;
-			}
-		}
-		else if (mode == Modes::StaticColor) {
-			byte static_R = static_color[0];
-			byte static_G = static_color[1];
-			byte static_B = static_color[2];
-			long temp_time = millis();
-			for (byte i = 0; i < 3; ++i) {
-				while (Serial.available() < 1 && millis() - temp_time < 10);
-				if (Serial.available() > 0) {
-					static_color[i] = Serial.read();
-					temp_time = millis();
-				}
-				else {
-					static_color[0] = static_R;
-					static_color[1] = static_G;
-					static_color[2] = static_B;
-					break;
-				}
-			}
-			StaticColorMode();
-		}
+		if (mode == Modes::Ambilight) AmbilightMode();
+		else if (mode == Modes::StaticColor) StaticColorMode();
 		else if (mode == Modes::PolishFlag) PolishFlagMode();
 		else if (mode == Modes::NotConnected) SmoothShutdown();
 	}
@@ -143,7 +63,93 @@ void RelayOn(bool on) {
 	else digitalWrite(RELAY_SIGNAL, LOW);
 }
 
+byte Rounding(float val) {
+	int t_val = val;
+	return t_val == val ? t_val : t_val + 1;
+}
+
+void AmbilightMode() {
+	byte it_num = Rounding(3 * NUM_LEDS / (float)ARDUINO_BUFFER_SIZE); // количество частей с данными
+	byte rgb = 0, led_num = 0;
+
+	bool done = true;
+	bool stop = false;
+
+	while (!stop) {
+		for (byte i = 0; i < it_num; ++i) {
+			if (done) {
+				time_als = millis();
+				// отправляем ОК на ПК до тех пор пока не выйдет время или с ПК не будут отправлены данные
+				while (Serial.available() == 0 && millis() - time_als < 1700) Serial.write("OK\n");
+				if (Serial.available() == 0) {
+					stop = true;
+					break;
+				}
+				time_als = millis();
+				if (i != it_num - 1) {
+					for (int j = i * ARDUINO_BUFFER_SIZE; j < (i + 1) * ARDUINO_BUFFER_SIZE; ++j) {
+						while (Serial.available() == 0 && millis() - time_als < 50);
+						if (Serial.available() == 0) {
+							stop = true;
+							done = false;
+							break;
+						}
+
+						if (rgb == 0) leds[led_num].r = Serial.read();
+						else if (rgb == 1) leds[led_num].g = Serial.read();
+						else if (rgb == 2) leds[led_num++].b = Serial.read();
+						++rgb;
+						if (rgb >= 3) rgb = 0;
+
+						time_als = millis();
+					}
+				}
+				else {
+					for (int j = i * ARDUINO_BUFFER_SIZE; j < 3 * NUM_LEDS; ++j) {
+						while (Serial.available() == 0 && millis() - time_als < 50);
+						if (Serial.available() == 0) {
+							stop = true;
+							done = false;
+							break;
+						}
+
+						if (rgb == 0) leds[led_num].r = Serial.read();
+						else if (rgb == 1) leds[led_num].g = Serial.read();
+						else if (rgb == 2) leds[led_num++].b = Serial.read();
+						++rgb;
+						if (rgb >= 3) rgb = 0;
+
+						time_als = millis();
+					}
+				}
+			}
+			else break;
+		}
+		FastLED.show();
+		rgb = 0;
+		led_num = 0;
+	}
+}
+
 void StaticColorMode() {
+	byte static_R = static_color[0];
+	byte static_G = static_color[1];
+	byte static_B = static_color[2];
+	long temp_time = millis();
+	for (byte i = 0; i < 3; ++i) {
+		while (Serial.available() < 1 && millis() - temp_time < 10);
+		if (Serial.available() > 0) {
+			static_color[i] = Serial.read();
+			temp_time = millis();
+		}
+		else {
+			static_color[0] = static_R;
+			static_color[1] = static_G;
+			static_color[2] = static_B;
+			break;
+		}
+	}
+
 	for (int i = 0; i < NUM_LEDS; ++i) {
 		leds[i].setRGB(static_color[0], static_color[1], static_color[2]);
 	}
@@ -180,15 +186,10 @@ void AnimationMode() {
 
 void SmoothShutdown() {
 	byte current_brightness = FastLED.getBrightness();
-	for (byte brightness = current_brightness; brightness > 0; --brightness) {
+	for (int brightness = current_brightness; brightness > 0; --brightness) {
 		FastLED.setBrightness(brightness);
 		FastLED.delay(1500 / current_brightness);
 	}
 	RelayOn(false);
 	FastLED.setBrightness(current_brightness);
-}
-
-byte Rounding(float val) {
-	int t_val = val;
-	return t_val == val ? t_val : t_val + 1;
 }

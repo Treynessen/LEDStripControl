@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO.Ports;
 using System.Windows.Forms;
-using System.Drawing;
 using System.Threading;
 
 public sealed partial class ArduinoSerialPort : IDisposable
@@ -12,13 +11,22 @@ public sealed partial class ArduinoSerialPort : IDisposable
     public bool Connected { get; private set; } = false;
 
     private DataToSend data;
-    Thread RefreshDataThread, SendDataToArduinoThread;
-    int arduino_buffer_size = 40; // Добавить в настройки?
+    private Thread RefreshDataThread, SendDataToArduinoThread;
+    private int arduino_buffer_size = 40; // Добавить в настройки?
     private bool stop_data_send = true;
     private bool have_corner_leds = false;
 
-    Modes current_mode = Modes.NotConnected;
-    byte[] standart_rgb = { 0, 0, 0 }; // данные для статической подсветки
+    private Modes current_mode = Modes.NotConnected;
+    private byte[] standart_rgb = { 0, 0, 0 }; // данные для статической подсветки
+
+    public DataForExport GetData
+    {
+        get
+        {
+            if (data != null) return new DataForExport(standart_rgb, data.NumVerticalLeds, data.NumHorizontalLeds, have_corner_leds, current_mode);
+            else return new DataForExport(standart_rgb, 0, 0, have_corner_leds, current_mode);
+        }
+    }
 
     private DateTime time_lcm = new DateTime(); // time last change mode
 
@@ -84,9 +92,12 @@ public sealed partial class ArduinoSerialPort : IDisposable
 
     public void SetSettings(int num_vertical_leds, int num_horizontal_leds, bool have_corner_leds)
     {
-        if (data == null) data = new DataToSend(num_vertical_leds, num_horizontal_leds);
-        else data.RefreshSettings(num_vertical_leds, num_horizontal_leds);
-        this.have_corner_leds = have_corner_leds;
+        if (num_vertical_leds > 0 && num_horizontal_leds > 0)
+        {
+            if (data == null) data = new DataToSend(num_vertical_leds, num_horizontal_leds);
+            else data.RefreshSettings(num_vertical_leds, num_horizontal_leds);
+            this.have_corner_leds = have_corner_leds;
+        }
     }
 
     public void SetRGB(byte r, byte g, byte b)

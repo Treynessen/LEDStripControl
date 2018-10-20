@@ -8,7 +8,9 @@ namespace LEDStripControl
     public partial class Form1 : Form
     {
         private ArduinoSerialPort arduino;
-        bool shut_down = false; // выключение программы
+        private ImportExportSettings import_export_settings = new ImportExportSettings();
+        private bool dont_show = true; // Не показывать сообщение "Изменения сохранены"
+        private bool shut_down = false; // выключение программы
 
         public Form1()
         {
@@ -31,6 +33,34 @@ namespace LEDStripControl
         private void Form1_Shown(object sender, EventArgs e)
         {
             Hide();
+            if (import_export_settings.OpenConfigFile())
+            {
+                RedTextBox.Text = import_export_settings.StandartRGB[0].ToString();
+                GreenTextBox.Text = import_export_settings.StandartRGB[1].ToString();
+                BlueTextBox.Text = import_export_settings.StandartRGB[2].ToString();
+                SaveRGB_Click(this, EventArgs.Empty);
+                verticalLEDTextBox.Text = import_export_settings.NumVerticalLeds.ToString();
+                horizontalLEDTextBox.Text = import_export_settings.NumHorizontalLeds.ToString();
+                CorneLEDsCheckBox.Checked = import_export_settings.HaveCornerLeds;
+                SaveCharacteristicsButton_Click(this, EventArgs.Empty);
+                dont_show = false;
+                switch (import_export_settings.CurrentMode)
+                {
+                    case Modes.Ambilight:
+                        AmbilightToolStripMenuItem_Click(this, EventArgs.Empty);
+                        break;
+                    case Modes.Animation:
+                        AnimationToolStripMenuItem_Click(this, EventArgs.Empty);
+                        break;
+                    case Modes.PolishFlag:
+                        PolishFlagToolStripMenuItem_Click(this, EventArgs.Empty);
+                        break;
+                    case Modes.StaticColor:
+                        StaticToolStripMenuItem_Click(this, EventArgs.Empty);
+                        break;
+                }
+            }
+            else MessageBox.Show("Файл с настройками не найден или поврежден\nБудут применены стандартные настройки", "Ошибка");
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -41,6 +71,8 @@ namespace LEDStripControl
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
+            DataForExport data_for_export = arduino.GetData;
+            import_export_settings.SaveConfigToFile(data_for_export.StandartRGB, data_for_export.NumVerticalLeds, data_for_export.NumHorizontalLeds, data_for_export.HaveCornerLeds, data_for_export.CurrentMode);
             if (arduino.Connected) arduino.SetMode(Modes.NotConnected);
             if (arduino != null) arduino.Dispose();
         }
@@ -80,7 +112,6 @@ namespace LEDStripControl
 
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            arduino.SetMode(Modes.NotConnected);
             shut_down = true;
             Application.Exit();
         }
@@ -99,6 +130,8 @@ namespace LEDStripControl
         {
             arduino.SetMode(Modes.Animation);
             EnableModes(Modes.Animation);
+            AmbilightToolStripMenuItem.Enabled = false; // эмбилайт после анимации криво работает
+                                                        // почему?
         }
 
         private void AmbilightToolStripMenuItem_Click(object sender, EventArgs e)
@@ -169,7 +202,7 @@ namespace LEDStripControl
                 b = 0;
             }
             arduino.SetRGB(r, g, b);
-            MessageBox.Show("Изменения сохранены");
+            if (!dont_show) MessageBox.Show("Изменения сохранены");
         }
 
         private void SaveCharacteristicsButton_Click(object sender, EventArgs e)
@@ -195,7 +228,7 @@ namespace LEDStripControl
                 horizontalLEDTextBox.Text = "0";
                 num_horizontal_leds = 0;
             }
-            if(num_vertical_leds == 0 || num_horizontal_leds == 0)
+            if (num_vertical_leds == 0 || num_horizontal_leds == 0)
             {
                 MessageBox.Show("Неверно указаны данные", "Ошибка");
                 return;
@@ -203,7 +236,7 @@ namespace LEDStripControl
             else
             {
                 arduino.SetSettings(num_vertical_leds, num_horizontal_leds, CorneLEDsCheckBox.Checked);
-                MessageBox.Show("Изменения сохранены");
+                if(!dont_show) MessageBox.Show("Изменения сохранены");
             }
         }
 

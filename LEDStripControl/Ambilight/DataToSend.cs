@@ -73,6 +73,7 @@ public sealed class DataToSend : IDisposable
         screen_capture.RefreshScreenResolution();
         screen.Width = screen_capture.Width;
         screen.Height = screen_capture.Height;
+        Data = new AreaForLED[2 * num_vertical_leds + 2 * num_horizontal_leds];
         FillData();
     }
 
